@@ -14,7 +14,7 @@ from .const import (
     ATTR_MANUFACTURER,
     DOMAIN,
     REGISTERS,
-    NovusModbusSensorEntityDescription,
+    NovusRegister,
 )
 from .hub import NovusModbusHub
 
@@ -53,12 +53,12 @@ class NovusSensor(CoordinatorEntity, SensorEntity):
         platform_name: str,
         hub: NovusModbusHub,
         device_info,
-        description: NovusModbusSensorEntityDescription,
+        description: NovusRegister,
     ):
         """Initialize the sensor."""
         self._platform_name = platform_name
         self._attr_device_info = device_info
-        self.entity_description: NovusModbusSensorEntityDescription = description
+        self.entity_description: NovusRegister = description
 
         super().__init__(coordinator=hub)
 
