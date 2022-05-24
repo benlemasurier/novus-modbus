@@ -14,8 +14,6 @@ from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.register_read_message import ReadHoldingRegistersResponse
 from voluptuous.validators import Number
 
-from .const import FAULT_MESSAGES
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -86,18 +84,6 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
             kwargs = {"unit": unit} if unit else {}
             return self._client.read_holding_registers(
                     address, 4, **kwargs)
-
-    async def _async_update_data(self) -> dict:
-        realtime_data = {}
-        try:
-            realtime_data = await self.hass.async_add_executor_job(
-                self.fetch
-            )
-        except ConnectionException:
-            _LOGGER.error("novus modbus read failed.")
-            realtime_data["faultmsg"] = "novus controller unreachable."
-
-        return {**realtime_data}
 
     def fetch(self) -> dict:
         """Fetch data from novus controller"""
