@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure the Modbus Interface",
+        "data": {
+          "host": "URL or serial port to query",
+          "name": "Sensor prefix used in HA",
+          "scan_interval": "Polling period in seconds"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Device is already configured"
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  }
+}

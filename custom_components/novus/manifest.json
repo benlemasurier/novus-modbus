@@ -1,0 +1,14 @@
+{
+  "version": "0.1.0",
+  "codeowners": ["@benlemasurier"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/benlemasurier/novus-modbus",
+  "issue_tracker": "https://github.com/benlemasurier/novus-modbus/issues",
+  "domain": "novus_modbus",
+  "iot_class": "local_polling",
+  "name": "Novus Modbus",
+  "requirements": [
+    "pymodbus>=2.3.0"
+  ]
+}
