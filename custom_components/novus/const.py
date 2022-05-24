@@ -18,17 +18,17 @@ ATTR_MANUFACTURER = "Novus Automation"
 
 
 @dataclass
+class NovusRegister(SensorEntityDescription):
+    """A class that describes Novus controller registers"""
+
+
+@dataclass
 class NovusTemperature(NovusRegister):
     """A class describing Novus temperature registers"""
     state_class = STATE_CLASS_MEASUREMENT,
     device_class = SensorDeviceClass.TEMPERATURE,
     native_unit_of_measurement = TEMP_CELSIUS,
     entity_registry_enabled_default = True,
-
-
-@dataclass
-class NovusRegister(SensorEntityDescription):
-    """A class that describes Novus controller registers"""
 
 
 REGISTERS: dict[str, list[NovusRegister]] = {
