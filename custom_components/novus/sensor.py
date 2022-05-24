@@ -13,7 +13,7 @@ import homeassistant.util.dt as dt_util
 from .const import (
     ATTR_MANUFACTURER,
     DOMAIN,
-    SENSOR_TYPES,
+    REGISTERS,
     NovusModbusSensorEntityDescription,
 )
 from .hub import NovusModbusHub
@@ -32,7 +32,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     }
 
     entities = []
-    for sensor_description in SENSOR_TYPES.values():
+    for sensor_description in REGISTERS.values():
         sensor = NovusSensor(
             hub_name,
             hub,

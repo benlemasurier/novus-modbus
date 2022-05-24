@@ -101,9 +101,9 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
             wordorder=Endian.Little
         )
 
-        data["t1_temp_c"] = decoder.decode_16bit_int()
-        data["t2_temp_c"] = decoder.decode_16bit_int()
-        data["temp_diff_c"] = decoder.decode_16bit_int()
+        data["t1_temp_c"] = decoder.decode_16bit_int() / 10
+        data["t2_temp_c"] = decoder.decode_16bit_int() / 10
+        data["temp_diff_c"] = decoder.decode_16bit_int() / 10
         # data["diff_setpoint_c_on"] = decoder.decode_16bit_int()
 
         # resp = self._read(address=4)
