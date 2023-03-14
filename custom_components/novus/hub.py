@@ -2,12 +2,13 @@
 from datetime import timedelta
 import logging
 import threading
+import pymodbus
 from urllib.parse import urlparse
 
 from homeassistant.core import CALLBACK_TYPE, callback
 from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from pymodbus.client.sync import ModbusSerialClient, ModbusTcpClient
+from pymodbus.client import ModbusTcpClient, ModbusSerialClient
 from pymodbus.constants import Endian
 from pymodbus.exceptions import ConnectionException
 from pymodbus.payload import BinaryPayloadDecoder
@@ -16,9 +17,8 @@ from voluptuous.validators import Number
 
 _LOGGER = logging.getLogger(__name__)
 
-
 class NovusModbusHub(DataUpdateCoordinator[dict]):
-    """Class to manage fetching data from a Novus Controller."""
+    """Thread-safe data retrieval from a Novus Controller"""
 
     def __init__(
         self,
@@ -35,31 +35,29 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
             update_interval=timedelta(seconds=scan_interval),
         )
 
+        # split the configured hostname into its component parts.
+        # If it's not a URL it might be a serial port.
+        # This logic is tested to work with linux and windows serial port names.
         parsed = urlparse(f'//{hostname}')
-
-        # If it's not a URL it may be a serial port.
         if (parsed.port is None) and ((parsed.hostname is None) or
-           (parsed.hostname[0:3] == "com")):
-            self._client = ModbusSerialClient(
-                    method='rtu',
-                    port=parsed.path + parsed.netloc,
-                    baudrate=9600,
-                    stopbits=1,
-                    bytesize=8,
-                    timeout=5)
+                                      (parsed.hostname[0:3] == "com")):
+            self._client = ModbusSerialClient(method='rtu',
+                                              port=parsed.path + parsed.netloc,
+                                              baudrate = 9600,
+                                              stopbits = 1,
+                                              bytesize = 8,
+                                              timeout = 5)
         else:
             if (parsed.port is None):
                 localport = 502
             else:
                 localport = parsed.port
 
-            self._client = ModbusTcpClient(
-                    host=parsed.hostname,
-                    port=localport,
-                    timeout=5)
+            self._client = ModbusTcpClient(host = parsed.hostname,
+                                           port = localport,
+                                           timeout = 5)
 
         self._lock = threading.Lock()
-
         self.data: dict = {}
 
     @callback
@@ -76,30 +74,37 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
         with self._lock:
             self._client.close()
 
-    def _read(
-        self, unit = 1, address = 0
-    ) -> ReadHoldingRegistersResponse:
-        """Read modbus holding registers."""
-        with self._lock:
-            kwargs = {"unit": unit} if unit else {}
-            return self._client.read_holding_registers(
-                    address, 4, **kwargs)
+    def _read(self, unit, address, count) -> ReadHoldingRegistersResponse:
+        """Read modbus holding registers"""
 
-    def fetch(self) -> dict:
-        """Fetch data from novus controller"""
+        with self._lock:
+            kwargs = {"slave": unit}
+
+            return self._client.read_holding_registers(address, count, **kwargs)
+
+    async def _async_update_data(self) -> dict:
+        realtime_data = {}
+        try:
+            realtime_data = await self.hass.async_add_executor_job(
+                self.read_modbus_realtime_data
+            )
+        except ConnectionException:
+            _LOGGER.error("read failed: controller is unreachable.")
+
+        return realtime_data
+
+    def read_modbus_realtime_data(self) -> dict:
         data = {}
 
         # TODO: data can only be read 4 registers at a time,
         # abstract this out so we don't need to keep calling _read()
-        resp = self._read()
+        resp = self._read(unit = 1, address = 0, count = 4)
         if resp.isError():
             return {}
 
-        decoder = BinaryPayloadDecoder.fromRegisters(
-            resp.registers,
-            byteorder=Endian.Big,
-            wordorder=Endian.Little
-        )
+        decoder = BinaryPayloadDecoder.fromRegisters(resp.registers,
+                                                     byteorder = Endian.Big,
+                                                     wordorder = Endian.Little)
 
         data["t1_temp_c"] = decoder.decode_16bit_int() / 10
         data["t2_temp_c"] = decoder.decode_16bit_int() / 10

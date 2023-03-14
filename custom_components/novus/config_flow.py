@@ -31,7 +31,7 @@ def host_valid(netloc):
     try:
         # if it's not a URL it may be a serial port.
         if (parsed.port is None) and ((parsed.hostname is None) or
-           (parsed.hostname[0:3] == "com")):
+                                      (parsed.hostname[0:3] == "com")):
             return True
 
     # invalid hostname
@@ -39,6 +39,7 @@ def host_valid(netloc):
         return False
 
     return True
+
 
 
 class NovusModbusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -54,7 +55,7 @@ class NovusModbusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return False
 
     async def async_step_user(self, user_input=None):
-        """Handle initial configuration step."""
+        """Handle initial configuration step"""
         errors = {}
 
         if user_input is not None:

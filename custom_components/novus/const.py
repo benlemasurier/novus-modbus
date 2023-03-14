@@ -35,14 +35,17 @@ REGISTERS: dict[str, list[NovusRegister]] = {
     "r0": NovusTemperature(
         key="t1_temp_c",
         name="T1 Temperature",
+        icon="mdi:thermometer",
     ),
     "r1": NovusTemperature(
         key="t2_temp_c",
         name="T2 Temperature",
+        icon="mdi:thermometer",
     ),
     "r2": NovusTemperature(
         key="temp_diff_c",
         name="T1-T2 Temperature (dIF)",
+        icon="mdi:thermometer",
     ),
     # "r3": NovusTemperature(
     #     key="diff_setpoint_c_on",
