@@ -17,6 +17,7 @@ from voluptuous.validators import Number
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class NovusModbusHub(DataUpdateCoordinator[dict]):
     """Thread-safe data retrieval from a Novus Controller"""
 
@@ -38,24 +39,27 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
         # split the configured hostname into its component parts.
         # If it's not a URL it might be a serial port.
         # This logic is tested to work with linux and windows serial port names.
-        parsed = urlparse(f'//{hostname}')
-        if (parsed.port is None) and ((parsed.hostname is None) or
-                                      (parsed.hostname[0:3] == "com")):
-            self._client = ModbusSerialClient(method='rtu',
-                                              port=parsed.path + parsed.netloc,
-                                              baudrate = 9600,
-                                              stopbits = 1,
-                                              bytesize = 8,
-                                              timeout = 5)
+        parsed = urlparse(f"//{hostname}")
+        if (parsed.port is None) and (
+            (parsed.hostname is None) or (parsed.hostname[0:3] == "com")
+        ):
+            self._client = ModbusSerialClient(
+                method="rtu",
+                port=parsed.path + parsed.netloc,
+                baudrate=9600,
+                stopbits=1,
+                bytesize=8,
+                timeout=5,
+            )
         else:
-            if (parsed.port is None):
+            if parsed.port is None:
                 localport = 502
             else:
                 localport = parsed.port
 
-            self._client = ModbusTcpClient(host = parsed.hostname,
-                                           port = localport,
-                                           timeout = 5)
+            self._client = ModbusTcpClient(
+                host=parsed.hostname, port=localport, timeout=5
+            )
 
         self._lock = threading.Lock()
         self.data: dict = {}
@@ -98,13 +102,13 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
 
         # TODO: data can only be read 4 registers at a time,
         # abstract this out so we don't need to keep calling _read()
-        resp = self._read(unit = 1, address = 0, count = 4)
+        resp = self._read(unit=1, address=0, count=4)
         if resp.isError():
             return {}
 
-        decoder = BinaryPayloadDecoder.fromRegisters(resp.registers,
-                                                     byteorder = Endian.Big,
-                                                     wordorder = Endian.Little)
+        decoder = BinaryPayloadDecoder.fromRegisters(
+            resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
+        )
 
         data["t1_temp_c"] = decoder.decode_16bit_int() / 10
         data["t2_temp_c"] = decoder.decode_16bit_int() / 10

@@ -25,10 +25,11 @@ class NovusRegister(SensorEntityDescription):
 @dataclass
 class NovusTemperature(NovusRegister):
     """A class describing Novus temperature registers"""
-    state_class = STATE_CLASS_MEASUREMENT,
-    device_class = SensorDeviceClass.TEMPERATURE,
-    native_unit_of_measurement = TEMP_CELSIUS,
-    entity_registry_enabled_default = True,
+
+    state_class = (STATE_CLASS_MEASUREMENT,)
+    device_class = (SensorDeviceClass.TEMPERATURE,)
+    native_unit_of_measurement = (TEMP_CELSIUS,)
+    entity_registry_enabled_default = (True,)
 
 
 REGISTERS: dict[str, list[NovusRegister]] = {

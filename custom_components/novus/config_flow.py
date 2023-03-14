@@ -11,7 +11,7 @@ from .const import DEFAULT_NAME, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL, DOMAIN
 DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
-        vol.Required(CONF_HOST, default='localhost'): str,
+        vol.Required(CONF_HOST, default="localhost"): str,
         vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): int,
     }
 )
@@ -26,12 +26,13 @@ def novus_modbus_entries(hass: HomeAssistant):
 
 
 def host_valid(netloc):
-    parsed = urlparse(f'//{netloc}')
+    parsed = urlparse(f"//{netloc}")
 
     try:
         # if it's not a URL it may be a serial port.
-        if (parsed.port is None) and ((parsed.hostname is None) or
-                                      (parsed.hostname[0:3] == "com")):
+        if (parsed.port is None) and (
+            (parsed.hostname is None) or (parsed.hostname[0:3] == "com")
+        ):
             return True
 
     # invalid hostname
@@ -39,7 +40,6 @@ def host_valid(netloc):
         return False
 
     return True
-
 
 
 class NovusModbusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
