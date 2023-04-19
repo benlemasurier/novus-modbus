@@ -5,6 +5,8 @@ import logging
 from typing import Optional
 
 from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.number import NumberEntity
 from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -32,21 +34,24 @@ async def async_setup_entry(hass, entry, async_add_entities):
     }
 
     entities = []
-    for sensor_description in REGISTERS.values():
-        sensor = NovusSensor(
+    for item_description in REGISTERS.values():
+        entity = NovusEntity(
             hub_name,
             hub,
             device_info,
-            sensor_description,
+            item_description,
         )
-        entities.append(sensor)
+        entities.append(entity)
 
     async_add_entities(entities)
     return True
 
 
-class NovusSensor(CoordinatorEntity, SensorEntity):
-    """Representation of a Novus Modbus sensor."""
+class NovusEntity(CoordinatorEntity,
+                  SensorEntity,
+                  BinarySensorEntity,
+                  NumberEntity):
+    """Novus modbus register entity"""
 
     def __init__(
         self,
@@ -55,7 +60,7 @@ class NovusSensor(CoordinatorEntity, SensorEntity):
         device_info,
         description: NovusRegister,
     ):
-        """Initialize the sensor."""
+        """Initialize the entity."""
         self._platform_name = platform_name
         self._attr_device_info = device_info
         self.entity_description: NovusRegister = description
@@ -73,7 +78,7 @@ class NovusSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
+        """Return the state of the entity."""
         return (
             self.coordinator.data[self.entity_description.key]
             if self.entity_description.key in self.coordinator.data
