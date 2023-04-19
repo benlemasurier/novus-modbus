@@ -145,9 +145,8 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
         )
         data["hy1"] = decoder.decode_16bit_int()
         data["hy2"] = decoder.decode_16bit_int()
+        # FIXME: extract bit values
         data["ihm"] = decoder.decode_16bit_int()
-        data["ihm_p1_out1"] = data["ihm"] & 0x01
-        data["ihm_p1_out2"] = data["ihm"] & 0x02
         data["control_status"] = decoder.decode_16bit_int()
 
         resp = self._read(unit=1, address=16, count=4)
@@ -171,5 +170,8 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
         )
         # FIXME: extract values
         data["ice_ht1_ht2_status"] = decoder.decode_16bit_int()
+        #data["sp1"] = decoder.decode_16bit_int()
+        #data["b1y"] = decoder.decode_16bit_int()
+        #data["ac1"] = decoder.decode_16bit_int()
 
         return data
