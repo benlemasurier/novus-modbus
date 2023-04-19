@@ -105,20 +105,72 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
         resp = self._read(unit=1, address=0, count=4)
         if resp.isError():
             return {}
-
         decoder = BinaryPayloadDecoder.fromRegisters(
             resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
         )
-
         data["t1_temp_c"] = decoder.decode_16bit_int() / 10
         data["t2_temp_c"] = decoder.decode_16bit_int() / 10
         data["temp_diff_c"] = decoder.decode_16bit_int() / 10
-        # data["diff_setpoint_c_on"] = decoder.decode_16bit_int()
+        data["don"] = decoder.decode_16bit_int()
 
-        # resp = self._read(address=4)
-        # if resp.isError():
-        #     return {}
+        resp = self._read(unit=1, address=4, count=4)
+        if resp.isError():
+            return {}
+        decoder = BinaryPayloadDecoder.fromRegisters(
+            resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
+        )
+        data["doff"] = decoder.decode_16bit_int()
+        data["ind"] = decoder.decode_16bit_int() / 10
+        # FIXME: combine this into a single value
+        data["serial_high"] = decoder.decode_16bit_int()
+        data["serial_low"] = decoder.decode_16bit_int()
 
-        # data["diff_setpoint_c_off"] = decoder.decode_16bit_int()
+        resp = self._read(unit=1, address=8, count=4)
+        if resp.isError():
+            return {}
+        decoder = BinaryPayloadDecoder.fromRegisters(
+            resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
+        )
+        data["ice"] = decoder.decode_16bit_int()
+        data["ht1"] = decoder.decode_16bit_int()
+        data["ht2"] = decoder.decode_16bit_int()
+        data["hys"] = decoder.decode_16bit_int()
+
+        resp = self._read(unit=1, address=12, count=4)
+        if resp.isError():
+            return {}
+        decoder = BinaryPayloadDecoder.fromRegisters(
+            resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
+        )
+        data["hy1"] = decoder.decode_16bit_int()
+        data["hy2"] = decoder.decode_16bit_int()
+        # FIXME: extract bit values
+        data["ihm"] = decoder.decode_16bit_int()
+        data["control_status"] = decoder.decode_16bit_int()
+
+        resp = self._read(unit=1, address=16, count=4)
+        if resp.isError():
+            return {}
+        decoder = BinaryPayloadDecoder.fromRegisters(
+            resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
+        )
+        # FIXME: divide when screen may contain decimal values
+        data["screen_display_value"] = decoder.decode_16bit_int()
+        # FIXME: extract both values
+        data["version_and_screen_n"] = decoder.decode_16bit_int()
+        data["of1"] = decoder.decode_16bit_int()
+        data["of2"] = decoder.decode_16bit_int()
+
+        resp = self._read(unit=1, address=20, count=4)
+        if resp.isError():
+            return {}
+        decoder = BinaryPayloadDecoder.fromRegisters(
+            resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
+        )
+        # FIXME: extract values
+        data["ice_ht1_ht2_status"] = decoder.decode_16bit_int()
+        data["sp1"] = decoder.decode_16bit_int()
+        data["b1y"] = decoder.decode_16bit_int()
+        data["ac1"] = decoder.decode_16bit_int()
 
         return data

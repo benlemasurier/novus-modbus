@@ -1,13 +1,15 @@
 {
-  "version": "0.3.0",
+  "name": "Novus Modbus",
+  "domain": "novus_modbus",
+  "version": "0.4.0",
   "codeowners": ["@benlemasurier"],
-  "config_flow": true,
-  "dependencies": [],
   "documentation": "https://github.com/benlemasurier/novus-modbus",
   "issue_tracker": "https://github.com/benlemasurier/novus-modbus/issues",
-  "domain": "novus_modbus",
+  "config_flow": true,
+  "integration_type": "device",
   "iot_class": "local_polling",
-  "name": "Novus Modbus",
+  "loggers": ["novus_modbus"],
+  "dependencies": [],
   "requirements": [
     "pymodbus>=3.2.0"
   ]
