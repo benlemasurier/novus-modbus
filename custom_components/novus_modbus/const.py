@@ -19,34 +19,32 @@ ATTR_MANUFACTURER = "Novus Automation"
 
 @dataclass
 class NovusRegister(SensorEntityDescription):
-    """A class that describes Novus controller registers"""
+    """Generic container for register values"""
 
 
 @dataclass
 class NovusTemperature(NovusRegister):
-    """A class describing Novus temperature registers"""
+    """Registers holding temperature values"""
 
     state_class = (STATE_CLASS_MEASUREMENT,)
     device_class = (SensorDeviceClass.TEMPERATURE,)
     native_unit_of_measurement = (TEMP_CELSIUS,)
     entity_registry_enabled_default = (True,)
+    icon = "mdi:thermometer"
 
 
 REGISTERS: dict[str, list[NovusRegister]] = {
     "r0": NovusTemperature(
         key="t1_temp_c",
         name="T1 Temperature",
-        icon="mdi:thermometer",
     ),
     "r1": NovusTemperature(
         key="t2_temp_c",
         name="T2 Temperature",
-        icon="mdi:thermometer",
     ),
     "r2": NovusTemperature(
         key="temp_diff_c",
         name="T1-T2 Temperature (dIF)",
-        icon="mdi:thermometer",
     ),
     "r3": NovusTemperature(
         key="don",
@@ -56,7 +54,7 @@ REGISTERS: dict[str, list[NovusRegister]] = {
         key="doff",
         name="Differential setpoint for pump deactivation (dOff)",
     ),
-    "r5": NovusRegister(
+    "r5": NovusTemperature(
         key="ind",
         name="Temperature value shown on display (Ind)",
     ),
@@ -68,27 +66,27 @@ REGISTERS: dict[str, list[NovusRegister]] = {
         key="serial_low",
         name="Last 3 digits of the controller serial number",
     ),
-    "r8": NovusRegister(
+    "r8": NovusTemperature(
         key="ice",
         name="Anti-frost temperature setpoint (ICE)",
     ),
-    "r9": NovusRegister(
+    "r9": NovusTemperature(
         key="ht1",
         name="Temperature setpoint T1 overheating (Ht1)",
     ),
-    "r10": NovusRegister(
+    "r10": NovusTemperature(
         key="ht2",
         name="Temperature setpoint T2 critical maximum in the tank (Ht2)",
     ),
-    "r11": NovusRegister(
+    "r11": NovusTemperature(
         key="hys",
         name="Anti-frost temperature T1 hysteresis (HYS)",
     ),
-    "r12": NovusRegister(
+    "r12": NovusTemperature(
         key="hy1",
         name="Hysteresis of the overheating temperature T1 (Hy1)",
     ),
-    "r13": NovusRegister(
+    "r13": NovusTemperature(
         key="hy2",
         name="Hysteresis of the overheating temperature T2 (Hy2)",
     ),
@@ -108,11 +106,11 @@ REGISTERS: dict[str, list[NovusRegister]] = {
         key="version_and_screen_n",
         name="Software version and currently displayed screen",
     ),
-    "r18": NovusRegister(
+    "r18": NovusTemperature(
         key="of1",
         name="Offset value for sensor 1 measurement (oF1)",
     ),
-    "r19": NovusRegister(
+    "r19": NovusTemperature(
         key="of2",
         name="Offset value for sensor 2 measurement (oF2)",
     ),

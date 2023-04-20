@@ -31,21 +31,19 @@ PLATFORMS = ["sensor"]
 
 
 async def async_setup(hass, config):
-    """Novus modbus configuration"""
     hass.data[DOMAIN] = {}
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Configure a Novus modbus"""
     name = entry.data[CONF_NAME]
     scan_interval = entry.data[CONF_SCAN_INTERVAL]
     host = entry.data[CONF_HOST]
 
     _LOGGER.debug("setup %s.%s", DOMAIN, name)
 
+    # create and register the hub
     hub = NovusModbusHub(hass, name, host, scan_interval)
-    """Register the hub"""
     hass.data[DOMAIN][name] = {"hub": hub}
 
     for component in PLATFORMS:
@@ -56,7 +54,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def async_unload_entry(hass, entry):
-    """Unload Novus mobus configuration"""
     unload_ok = all(
         await asyncio.gather(
             *[
