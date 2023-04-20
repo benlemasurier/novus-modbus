@@ -16,7 +16,7 @@ from .const import (
     REGISTERS,
     NovusRegister,
 )
-from .hub import NovusModbusHub
+from .hub import NovusHub
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class NovusSensor(CoordinatorEntity, SensorEntity):
     def __init__(
         self,
         platform_name: str,
-        hub: NovusModbusHub,
+        hub: NovusHub,
         device_info,
         description: NovusRegister,
     ):

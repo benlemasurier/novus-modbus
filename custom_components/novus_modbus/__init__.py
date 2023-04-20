@@ -1,4 +1,6 @@
-"""Novus Automation Modbus Integration."""
+"""
+Custom integration for Novus Automation temperature controllers.
+"""
 import asyncio
 import logging
 
@@ -7,10 +9,12 @@ from homeassistant.const import CONF_HOST, CONF_NAME, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+from datetime import timedelta
 
 from .const import DEFAULT_NAME, DEFAULT_SCAN_INTERVAL, DOMAIN
-from .hub import NovusModbusHub
+from .hub import NovusHub
 
+# FIXME: use __package__?
 _LOGGER = logging.getLogger(__name__)
 
 NOVUS_MODBUS_SCHEMA = vol.Schema({
@@ -36,14 +40,15 @@ async def async_setup(hass, config):
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Handle configuration via the UI."""
     name = entry.data[CONF_NAME]
-    scan_interval = entry.data[CONF_SCAN_INTERVAL]
     host = entry.data[CONF_HOST]
+    interval = timedelta(seconds=entry.data[CONF_SCAN_INTERVAL])
 
     _LOGGER.debug("setup %s.%s", DOMAIN, name)
 
     # create and register the hub
-    hub = NovusModbusHub(hass, name, host, scan_interval)
+    hub = NovusHub(hass, name, host, interval)
     hass.data[DOMAIN][name] = {"hub": hub}
 
     for component in PLATFORMS:
@@ -53,18 +58,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_unload_entry(hass, entry):
-    ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in PLATFORMS
-            ]
-        )
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Removes a configuration entry."""
+    unloaded = all(
+        await asyncio.gather(*[
+            hass.config_entries.async_forward_entry_unload(entry, component)
+            for component in PLATFORMS
+        ])
     )
 
-    if not ok:
+    if not unloaded:
         return False
 
     hass.data[DOMAIN].pop(entry.data["name"])
     return True
+
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload a configuration entry."""
+    await async_unload_entry(hass, entry)
+    await async_setup_entry(hass, entry)

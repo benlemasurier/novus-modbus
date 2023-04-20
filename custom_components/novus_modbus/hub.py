@@ -6,8 +6,9 @@ import pymodbus
 from urllib.parse import urlparse
 
 from homeassistant.core import CALLBACK_TYPE, callback
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
 from pymodbus.constants import Endian
 from pymodbus.exceptions import ConnectionException
@@ -18,23 +19,17 @@ from voluptuous.validators import Number
 _LOGGER = logging.getLogger(__name__)
 
 
-class NovusModbusHub(DataUpdateCoordinator[dict]):
-    """Thread-safe data retrieval from a Novus Controller"""
+class NovusHub(DataUpdateCoordinator[dict]):
+    """Manages data retrieval from a Novus Controller"""
 
     def __init__(
         self,
-        hass: HomeAssistantType,
+        hass: HomeAssistant,
         name: str,
         hostname: str,
-        scan_interval: Number,
+        interval: timedelta,
     ):
-        """Initialize the modbus hub."""
-        super().__init__(
-            hass,
-            _LOGGER,
-            name=name,
-            update_interval=timedelta(seconds=scan_interval),
-        )
+        super().__init__(hass, _LOGGER, name=name, update_interval=interval)
 
         # split the configured hostname into its component parts.
         # If it's not a URL it might be a serial port.
@@ -92,8 +87,9 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
             realtime_data = await self.hass.async_add_executor_job(
                 self.read_modbus_realtime_data
             )
-        except ConnectionException:
-            _LOGGER.error("read failed: controller is unreachable.")
+        except Exception as exception:
+            _LOGGER.error(f"update failed: {exception}")
+            raise UpdateFailed() from exception
 
         return realtime_data
 
