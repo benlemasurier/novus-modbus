@@ -141,8 +141,23 @@ class NovusHub(DataUpdateCoordinator[dict]):
         )
         data["hy1"] = decoder.decode_16bit_int()
         data["hy2"] = decoder.decode_16bit_int()
-        # FIXME: extract bit values
-        data["ihm"] = decoder.decode_16bit_int()
+        ihm = decoder.decode_16bit_int()
+        data["ihm_p1_out1"] = bool(ihm & 0x01)
+        data["ihm_p1_out2"] = bool(ihm & 0x02)
+        data["ihm_pv"] = bool(ihm & 0x04)
+        data["ihm_rx"] = bool(ihm & 0x08)
+        data["ihm_internal_4"] = bool(ihm & 0x10)
+        data["ihm_status_t1"] = bool(ihm & 0x20)
+        data["ihm_status_defrost"] = bool(ihm & 0x40)
+        data["ihm_status_t2"] = bool(ihm & 0x80)
+        data["ihm_internal_8"] = bool(ihm & 0x100)
+        data["ihm_internal_9"] = bool(ihm & 0x200)
+        data["ihm_value_has_decimal"] = bool(ihm & 0x400)
+        data["ihm_internal_11"] = bool(ihm & 0x800)
+        data["ihm_internal_12"] = bool(ihm & 0x1000)
+        data["ihm_internal_13"] = bool(ihm & 0x2000)
+        data["ihm_internal_14"] = bool(ihm & 0x4000)
+        data["ihm_internal_15"] = bool(ihm & 0x8000)
         data["control_status"] = decoder.decode_16bit_int()
 
         resp = self._read(unit=1, address=16, count=4)
@@ -165,7 +180,10 @@ class NovusHub(DataUpdateCoordinator[dict]):
             resp.registers, byteorder=Endian.Big, wordorder=Endian.Little
         )
         # FIXME: extract values
-        data["ice_ht1_ht2_status"] = decoder.decode_16bit_int()
+        r20 = decoder.decode_16bit_int()
+        data["ice_status"] = bool(r20 & 0x01)
+        data["ht1_status"] = bool(r20 & 0x02)
+        data["ht2_status"] = bool(r20 & 0x04)
 
         # sp1, b1y, and ac1 cause errors when read
 

@@ -90,10 +90,7 @@ REGISTERS: dict[str, list[NovusRegister]] = {
         key="hy2",
         name="Hysteresis of the overheating temperature T2 (Hy2)",
     ),
-    "r14": NovusRegister(
-        key="ihm",
-        name="FIXME IHM status bits",
-    ),
+    # r14: IHM status bits (see below)
     "r15": NovusRegister(
         key="control_status",
         name="Measurement Status",
@@ -114,9 +111,82 @@ REGISTERS: dict[str, list[NovusRegister]] = {
         key="of2",
         name="Offset value for sensor 2 measurement (oF2)",
     ),
-    "r20": NovusRegister(
-        key="ice_ht1_ht2_status",
-        name="FIXME: ICE, HT1, and HT2 status bits",
+    # r20: ICE, HT1, HT2 status bits (see below)
+    "ihm_p1_out1": NovusRegister(
+        key="ihm_p1_out1",
+        name="P1 (OUT1) Enabled",
+    ),
+    "ihm_p2_out2": NovusRegister(
+        key="ihm_p2_out2",
+        name="P2 (OUT2) Enabled",
+    ),
+    "ihm_pv": NovusRegister(
+        key="ihm_pv",
+        name="PV Enabled",
+    ),
+    "ihm_rx": NovusRegister(
+        key="ihm_rx",
+        name="Serial Command Received",
+    ),
+    "ihm_internal_4": NovusRegister(
+        key="ihm_internal_4",
+        name="Internal Control (bit 4)",
+    ),
+    "ihm_status_t1": NovusRegister(
+        key="ihm_status_t1",
+        name="T1 Status LED",
+    ),
+    "ihm_status_defrost": NovusRegister(
+        key="ihm_status_defrost",
+        name="Defrosting",
+    ),
+    "ihm_status_t2": NovusRegister(
+        key="ihm_status_t2",
+        name="T2 Status LED",
+    ),
+    "ihm_internal_8": NovusRegister(
+        key="ihm_internal_8",
+        name="Internal Control (bit 8)",
+    ),
+    "ihm_internal_9": NovusRegister(
+        key="ihm_internal_9",
+        name="Internal Control (bit 9)",
+    ),
+    "ihm_value_has_decimal": NovusRegister(
+        key="ihm_value_has_decimal",
+        name="Value has a decimal point",
+    ),
+    "ihm_internal_11": NovusRegister(
+        key="ihm_internal_11",
+        name="Internal Control (bit 11)",
+    ),
+    "ihm_internal_12": NovusRegister(
+        key="ihm_internal_12",
+        name="Internal Control (bit 12)",
+    ),
+    "ihm_internal_13": NovusRegister(
+        key="ihm_internal_13",
+        name="Internal Control (bit 13)",
+    ),
+    "ihm_internal_14": NovusRegister(
+        key="ihm_internal_14",
+        name="Internal Control (bit 14)",
+    ),
+    "ihm_internal_15": NovusRegister(
+        key="ihm_internal_15",
+        name="Internal Control (bit 15)",
+    ),
+    "ice_status": NovusRegister(
+        key="ice_status",
+        name="Defrosting Enabled (ICE)",
+    ),
+    "ht1_status": NovusRegister(
+        key="ht1_status",
+        name="HT1 Enabled",
+    ),
+    "ht2_status": NovusRegister(
+        key="ht2_status",
+        name="HT2 Enabled",
     ),
     # r21-23 (sp1, b1y, ac1) result in errors when read.
     # the documentation is very unclear here.
