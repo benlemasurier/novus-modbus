@@ -120,16 +120,6 @@ REGISTERS: dict[str, list[NovusRegister]] = {
         key="ice_ht1_ht2_status",
         name="FIXME: ICE, HT1, and HT2 status bits",
     ),
-    #"r21": NovusRegister(
-    #    key="sp1",
-    #    name="Support Setpoint Value (SP1)",
-    #),
-    #"r22": NovusRegister(
-    #    key="b1y",
-    #    name="Support output hysteresis value (b1y)",
-    #),
-    #"r23": NovusRegister(
-    #    key="ac1",
-    #    name="Support output control action (AC1)",
-    #),
+    # r21-23 (sp1, b1y, ac1) result in errors when read.
+    # the documentation is very unclear here.
 }
