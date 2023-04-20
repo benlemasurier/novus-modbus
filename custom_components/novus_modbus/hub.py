@@ -170,8 +170,7 @@ class NovusModbusHub(DataUpdateCoordinator[dict]):
         )
         # FIXME: extract values
         data["ice_ht1_ht2_status"] = decoder.decode_16bit_int()
-        #data["sp1"] = decoder.decode_16bit_int()
-        #data["b1y"] = decoder.decode_16bit_int()
-        #data["ac1"] = decoder.decode_16bit_int()
+
+        # sp1, b1y, and ac1 cause errors when read
 
         return data

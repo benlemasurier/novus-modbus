@@ -46,7 +46,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class NovusSensor(CoordinatorEntity, SensorEntity):
-    """Representation of a Novus Modbus sensor."""
+    """Represents a modbus register on the controller"""
 
     def __init__(
         self,
@@ -55,7 +55,7 @@ class NovusSensor(CoordinatorEntity, SensorEntity):
         device_info,
         description: NovusRegister,
     ):
-        """Initialize the sensor."""
+        # initialize sensor
         self._platform_name = platform_name
         self._attr_device_info = device_info
         self.entity_description: NovusRegister = description
@@ -64,16 +64,17 @@ class NovusSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def name(self):
-        """Return the name."""
+        """Returns the sensor name."""
         return f"{self._platform_name} {self.entity_description.name}"
 
     @property
     def unique_id(self) -> Optional[str]:
+        """Returns the sensor's unique ID"""
         return f"{self._platform_name}_{self.entity_description.key}"
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
+        """Return the sensor's state."""
         return (
             self.coordinator.data[self.entity_description.key]
             if self.entity_description.key in self.coordinator.data
