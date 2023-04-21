@@ -26,10 +26,9 @@ class NovusRegister(SensorEntityDescription):
 class NovusTemperature(NovusRegister):
     """Registers holding temperature values"""
 
-    state_class = (STATE_CLASS_MEASUREMENT,)
-    device_class = (SensorDeviceClass.TEMPERATURE,)
-    native_unit_of_measurement = (TEMP_CELSIUS,)
-    entity_registry_enabled_default = (True,)
+    device_class = SensorDeviceClass.TEMPERATURE
+    state_class = STATE_CLASS_MEASUREMENT
+    native_unit_of_measurement = TEMP_CELSIUS
     icon = "mdi:thermometer"
 
 
